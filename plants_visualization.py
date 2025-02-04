@@ -68,8 +68,12 @@ plt.close()
 
 # 2 Boxplots
 # 2.1 Boxplots for Leaf Length by Plant
+df_all = df.copy()
+df_all["Plant Name"] = "All"
+df_combined = pd.concat([df_all, df], ignore_index=True)
+
 plt.figure(figsize=(8, 6))
-sns.boxplot(data=df, x="Plant Name", y="Leaf-Length (cm)", hue="Plant Name", palette="Set3")
+sns.boxplot(data=df_combined, x="Plant Name", y="Leaf-Length (cm)", hue="Plant Name", palette="Set3")
 plt.title("Boxplot of Leaf Length")
 plt.xlabel("Plant Name")
 plt.ylabel("Leaf Length (cm)")
@@ -78,8 +82,11 @@ plt.savefig(boxplot_leaf_length_path)
 plt.close()
 
 # 2.2 Boxplots for Leaf Width by Plant
+df_all = df.copy()
+df_all["Plant Name"] = "All"
+df_combined = pd.concat([df_all, df], ignore_index=True)
 plt.figure(figsize=(8, 6))
-sns.boxplot(data=df, x="Plant Name", y="Leaf-Width (cm)", hue="Plant Name", palette="Set3")
+sns.boxplot(data=df_combined, x="Plant Name", y="Leaf-Width (cm)", hue="Plant Name", palette="Set3")
 plt.title("Boxplot of Leaf Width")
 plt.xlabel("Plant Name")
 plt.ylabel("Leaf Width (cm)")
@@ -99,3 +106,20 @@ plt.legend(title="Plant Name")
 scatter_plot = os.path.join(IMAGE_DIR, "scatter_plot.png")
 plt.savefig(scatter_plot)
 plt.close()
+
+
+# 4. Calculations
+grouped = df.groupby("Plant Name")
+
+stats = grouped.agg(
+    Mean_Width=("Leaf-Width (cm)", "mean"),
+    Median_Width=("Leaf-Width (cm)", "median"),
+    Variance_Width=("Leaf-Width (cm)", "var"),
+    StdDev_Width=("Leaf-Width (cm)", "std"),
+    Mean_Length=("Leaf-Length (cm)", "mean"),
+    Median_Length=("Leaf-Length (cm)", "median"),
+    Variance_Length=("Leaf-Length (cm)", "var"),
+    StdDev_Length=("Leaf-Length (cm)", "std")
+)
+
+stats.to_csv(os.path.join(os.path.abspath('./stats/'), "stats.csv"), index=True)
